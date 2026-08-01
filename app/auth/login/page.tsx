@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/card";
 
 import { loginSchema, LoginFormData } from "@/schemas/login.schema";
-import { loginUser } from "@/services/AuthService";
+import { loginUser, getCurrentUser } from "@/services/AuthService";
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -96,20 +96,24 @@ export default function LoginPage() {
     try {
       const result = await loginUser(data);
 
-      if (result.success && result.data) {
-        toast.success(result.message || "Welcome back!");
+      if (result.success) {
+  toast.success(result.message || "Welcome back!");
 
-       
-        
+  const currentUser = await getCurrentUser();
 
-        const roleRoutes: Record<string, string> = {
-          CUSTOMER: "/dashboard/customer",
-          PROVIDER: "/dashboard/provider",
-          ADMIN: "/dashboard/admin",
-        };
+  if (!currentUser) {
+    toast.error("Failed to load user information.");
+    return;
+  }
 
-        router.push(roleRoutes[result.data.user.role] || "/");
-      } else {
+  const roleRoutes: Record<string, string> = {
+    CUSTOMER: "/dashboard/customer",
+    PROVIDER: "/dashboard/provider",
+    ADMIN: "/dashboard/admin",
+  };
+
+  router.push(roleRoutes[currentUser.role] || "/");
+} else {
         toast.error(result.message || "Invalid credentials");
       }
     } catch (error) {
@@ -128,7 +132,7 @@ export default function LoginPage() {
         animate="visible"
         className="relative hidden w-1/2 overflow-hidden lg:block"
       >
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-500 via-orange-600 to-slate-900" />
+        <div className="absolute inset-0 bg-linear-to-br from-orange-500 via-orange-600 to-slate-900" />
         <div className="absolute inset-0 opacity-10">
           <svg className="h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none">
             <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
