@@ -99,6 +99,7 @@ const adminMenu = [
 ];
 
 
+
 export default function Sidebar() {
 
   const pathname = usePathname();
@@ -114,38 +115,114 @@ export default function Sidebar() {
       : customerMenu;
 
 
+
   return (
+
     <aside
       className="
+        hidden
         h-screen
         w-72
+        shrink-0
+        border-r
+        border-slate-100
         bg-white
-        shadow-sm
         px-6
         py-8
+        lg:block
         sticky
         top-0
       "
     >
 
-      {/* Logo */}
+
+      {/* Brand */}
+
       <Link
         href="/"
         className="
-          text-2xl
-          font-bold
-          text-orange-500
+          flex
+          items-center
+          gap-2
         "
       >
-        GearUp
+
+        <div
+          className="
+            flex
+            h-10
+            w-10
+            items-center
+            justify-center
+            rounded-xl
+            bg-orange-500
+            text-lg
+            font-bold
+            text-white
+          "
+        >
+          G
+        </div>
+
+
+        <span
+          className="
+            text-2xl
+            font-bold
+            text-slate-900
+          "
+        >
+          GearUp
+        </span>
+
+
       </Link>
 
 
+
+
+      {/* User Role */}
+
+      <div
+        className="
+          mt-8
+          rounded-2xl
+          bg-slate-50
+          p-4
+        "
+      >
+
+        <p className="text-xs text-slate-500">
+          Logged in as
+        </p>
+
+
+        <p
+          className="
+            mt-1
+            font-semibold
+            text-slate-900
+          "
+        >
+          {user?.role || "USER"}
+        </p>
+
+      </div>
+
+
+
+
+
       {/* Navigation */}
-      <nav className="mt-10 space-y-2">
 
+      <nav
+        className="
+          mt-8
+          space-y-2
+        "
+      >
 
-        {menuItems.map((item) => {
+        {menuItems.map((item)=>{
 
           const Icon = item.icon;
 
@@ -155,10 +232,12 @@ export default function Sidebar() {
 
 
           return (
+
             <Link
               key={item.href}
               href={item.href}
               className={`
+                group
                 flex
                 items-center
                 gap-3
@@ -167,27 +246,38 @@ export default function Sidebar() {
                 py-3
                 text-sm
                 font-medium
-                transition
+                transition-all
 
                 ${
                   active
-                    ? "bg-orange-50 text-orange-500"
-                    : "text-slate-600 hover:bg-slate-50"
+                  ? "bg-orange-50 text-orange-600"
+                  : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                 }
               `}
             >
 
+
               <Icon
-                size={20}
+                className={`
+                  h-5
+                  w-5
+
+                  ${
+                    active
+                    ? "text-orange-500"
+                    : "text-slate-400 group-hover:text-slate-600"
+                  }
+                `}
               />
 
-              <span>
-                {item.title}
-              </span>
+
+              {item.title}
 
 
             </Link>
+
           );
+
         })}
 
 
@@ -195,5 +285,6 @@ export default function Sidebar() {
 
 
     </aside>
+
   );
 }

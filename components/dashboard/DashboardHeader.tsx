@@ -2,7 +2,7 @@
 
 import {
   Bell,
-  Menu,
+  ChevronDown,
 } from "lucide-react";
 
 import {
@@ -10,16 +10,12 @@ import {
   AvatarFallback,
 } from "@/components/ui/avatar";
 
-import {
-  useAuth,
-} from "@/providers/AuthProvider";
+import { useAuth } from "@/providers/AuthProvider";
 
 
 export default function DashboardHeader() {
 
-  const {
-    user,
-  } = useAuth();
+  const { user } = useAuth();
 
 
   return (
@@ -32,66 +28,47 @@ export default function DashboardHeader() {
         h-20
         items-center
         justify-between
-        bg-white
-        px-5
-        md:px-8
-        shadow-sm
+        border-b
+        border-slate-100
+        bg-white/80
+        px-6
+        backdrop-blur
       "
     >
 
-      {/* Left Side */}
-      <div className="flex items-center gap-4">
 
+      {/* Left */}
 
-        {/* Mobile Menu Button */}
-        <button
+      <div>
+
+        <h2
           className="
-            flex
-            h-10
-            w-10
-            items-center
-            justify-center
-            rounded-xl
-            text-slate-600
-            hover:bg-slate-50
-            lg:hidden
+            text-xl
+            font-semibold
+            text-slate-900
           "
         >
-          <Menu size={22} />
-        </button>
+          Welcome back,
+        </h2>
 
 
-
-        <div>
-
-          <h1
-            className="
-              text-lg
-              font-semibold
-              text-slate-900
-            "
-          >
-            Welcome back
-          </h1>
-
-
-          <p
-            className="
-              text-sm
-              text-slate-500
-            "
-          >
-            Manage your GearUp activities
-          </p>
-
-        </div>
-
+        <p
+          className="
+            text-sm
+            text-slate-500
+          "
+        >
+          Manage your GearUp experience
+        </p>
 
       </div>
 
 
 
-      {/* Right Side */}
+
+
+      {/* Right */}
+
       <div
         className="
           flex
@@ -102,6 +79,7 @@ export default function DashboardHeader() {
 
 
         {/* Notification */}
+
         <button
           className="
             relative
@@ -111,25 +89,45 @@ export default function DashboardHeader() {
             items-center
             justify-center
             rounded-xl
-            text-slate-600
+            text-slate-500
+            transition
             hover:bg-slate-50
           "
         >
 
-          <Bell size={20}/>
+          <Bell className="h-5 w-5" />
+
+
+          <span
+            className="
+              absolute
+              right-2
+              top-2
+              h-2
+              w-2
+              rounded-full
+              bg-orange-500
+            "
+          />
 
         </button>
 
 
 
 
+
         {/* User */}
+
         <div
           className="
-            hidden
+            flex
             items-center
             gap-3
-            sm:flex
+            rounded-xl
+            px-3
+            py-2
+            transition
+            hover:bg-slate-50
           "
         >
 
@@ -137,35 +135,28 @@ export default function DashboardHeader() {
 
             <AvatarFallback
               className="
-                bg-orange-500
-                text-white
+                bg-orange-100
+                text-orange-600
+                font-semibold
               "
             >
-              {
-                user?.name
-                  ?.charAt(0)
-                  .toUpperCase()
-              }
+              {user?.name?.charAt(0) || "U"}
             </AvatarFallback>
 
           </Avatar>
 
 
 
-          <div
-            className="
-              leading-tight
-            "
-          >
+          <div className="hidden sm:block">
 
             <p
               className="
                 text-sm
-                font-medium
+                font-semibold
                 text-slate-900
               "
             >
-              {user?.name}
+              {user?.name || "User"}
             </p>
 
 
@@ -175,12 +166,20 @@ export default function DashboardHeader() {
                 text-slate-500
               "
             >
-              {user?.role}
+              {user?.role || "CUSTOMER"}
             </p>
-
 
           </div>
 
+
+
+          <ChevronDown
+            className="
+              h-4
+              w-4
+              text-slate-400
+            "
+          />
 
         </div>
 

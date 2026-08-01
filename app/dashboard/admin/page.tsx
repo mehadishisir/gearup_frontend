@@ -1,3 +1,6 @@
+import AnalyticsOverview from "@/components/dashboard/AnalyticsOverview";
+import RecentRentalsTable from "@/components/dashboard/RecentRentalsTable";
+import StatsCard from "@/components/dashboard/StatusCard";
 import {
   Users,
   Package,
@@ -6,28 +9,37 @@ import {
 } from "lucide-react";
 
 
+
 const stats = [
   {
     title: "Total Users",
     value: "2,540",
+    description: "Active platform users",
     icon: Users,
   },
+
   {
     title: "Total Gear",
     value: "860",
+    description: "Available equipment",
     icon: Package,
   },
+
   {
     title: "Total Rentals",
     value: "1,240",
+    description: "Completed rentals",
     icon: ShoppingCart,
   },
+
   {
     title: "Revenue",
     value: "$24.5K",
+    description: "Monthly revenue",
     icon: TrendingUp,
   },
 ];
+
 
 
 export default function AdminDashboardPage() {
@@ -35,59 +47,99 @@ export default function AdminDashboardPage() {
   return (
     <div className="space-y-8">
 
-      <div>
-        <h1 className="text-3xl font-bold text-slate-900">
+
+      {/* Header */}
+
+      <section>
+
+        <h1
+          className="
+            text-3xl
+            font-bold
+            text-slate-900
+          "
+        >
           Admin Dashboard
         </h1>
 
-        <p className="mt-2 text-slate-500">
-          Manage GearUp platform operations.
+
+        <p
+          className="
+            mt-2
+            text-slate-500
+          "
+        >
+          Manage GearUp marketplace performance and operations.
         </p>
-      </div>
+
+      </section>
 
 
-      <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
-
-        {stats.map((item) => {
-
-          const Icon = item.icon;
-
-          return (
-            <div
-              key={item.title}
-              className="
-                rounded-2xl
-                bg-white
-                p-6
-                shadow-sm
-                transition
-                hover:-translate-y-1
-                hover:shadow-lg
-              "
-            >
-
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-orange-50">
-
-                <Icon className="h-6 w-6 text-orange-500" />
-
-              </div>
 
 
-              <h2 className="mt-5 text-3xl font-bold text-slate-900">
-                {item.value}
-              </h2>
+      {/* Stats */}
+
+      <section
+        className="
+          grid
+          gap-6
+          sm:grid-cols-2
+          xl:grid-cols-4
+        "
+      >
+
+        {stats.map((item) => (
+
+          <StatsCard
+            key={item.title}
+            title={item.title}
+            value={item.value}
+            description={item.description}
+            icon={item.icon}
+          />
+
+        ))}
+
+      </section>
 
 
-              <p className="mt-1 text-sm text-slate-500">
-                {item.title}
-              </p>
+      <RecentRentalsTable />
 
-            </div>
-          );
+      <AnalyticsOverview />
 
-        })}
+      {/* Analytics Placeholder */}
 
-      </div>
+      <section
+        className="
+          rounded-2xl
+          bg-white
+          p-8
+          shadow-sm
+        "
+      >
+
+        <h2
+          className="
+            text-xl
+            font-semibold
+            text-slate-900
+          "
+        >
+          Analytics Overview
+        </h2>
+
+
+        <p
+          className="
+            mt-2
+            text-slate-500
+          "
+        >
+          Revenue charts and rental insights will appear here.
+        </p>
+
+
+      </section>
 
 
     </div>
