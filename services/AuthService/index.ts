@@ -4,8 +4,8 @@ import { cookies } from "next/headers";
 import { IUser, IRegisterPayload, ILoginPayload, IApiResponse, ILoginResponse } from "@/types/auth";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://gear-up-backend-one.vercel.app/api";
+// register user
 
-// ─── Register ─────────────────────────────────────────
 export const registerUser = async (
   payload: IRegisterPayload
 ): Promise<IApiResponse<IUser>> => {
@@ -24,8 +24,8 @@ export const registerUser = async (
 
   return result;
 };
+// get current user
 
-// ─── Login ────────────────────────────────────────────
 export const loginUser = async (
   payload: ILoginPayload
 ): Promise<IApiResponse<ILoginResponse>> => {
@@ -44,8 +44,8 @@ export const loginUser = async (
 
   return result;
 };
+// get current user
 
-// ─── Get Current User (/me) ───────────────────────────
 export const getCurrentUser = async (): Promise<IUser | null> => {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("accessToken")?.value;
@@ -63,8 +63,7 @@ export const getCurrentUser = async (): Promise<IUser | null> => {
   const result = await res.json();
   return result.data ?? null;
 };
-
-// ─── Logout ───────────────────────────────────────────
+// logout user
 export const logoutUser = async (): Promise<void> => {
   const cookieStore = await cookies();
   cookieStore.delete("accessToken");
