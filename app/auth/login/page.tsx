@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/card";
 
 import { loginSchema, LoginFormData } from "@/schemas/login.schema";
-import { loginUser, getCurrentUser } from "@/services/AuthService";
+import { getCurrentUser } from "@/services/AuthService";
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -91,37 +91,97 @@ export default function LoginPage() {
     defaultValues: { email: "", password: "" },
   });
 
-  async function onSubmit(data: LoginFormData) {
-    setIsLoading(true);
-    try {
-      const result = await loginUser(data);
+ async function onSubmit(data: LoginFormData) {
+  setIsLoading(true);
 
-      if (result.success) {
-  toast.success(result.message || "Welcome back!");
+  try {
 
-  const currentUser = await getCurrentUser();
+    const res = await fetch(
+      "/api/auth/login",
+      {
+        method: "POST",
 
-  if (!currentUser) {
-    toast.error("Failed to load user information.");
-    return;
-  }
+        headers: {
+          "Content-Type": "application/json",
+        },
 
-  const roleRoutes: Record<string, string> = {
-    CUSTOMER: "/dashboard/customer",
-    PROVIDER: "/dashboard/provider",
-    ADMIN: "/dashboard/admin",
-  };
-
-  router.push(roleRoutes[currentUser.role] || "/");
-} else {
-        toast.error(result.message || "Invalid credentials");
+        body: JSON.stringify(data),
       }
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Something went wrong");
-    } finally {
-      setIsLoading(false);
+    );
+
+
+    const result = await res.json();
+
+
+
+    if (result.success) {
+
+      toast.success(
+        result.message || "Welcome back!"
+      );
+
+
+      const currentUser =
+        await getCurrentUser();
+
+
+
+      if (!currentUser) {
+
+        toast.error(
+          "Failed to load user information."
+        );
+
+        return;
+      }
+
+
+
+      const roleRoutes: Record<string, string> = {
+
+        CUSTOMER:
+          "/dashboard/customer",
+
+        PROVIDER:
+          "/dashboard/provider",
+
+        ADMIN:
+          "/dashboard/admin",
+
+      };
+
+
+
+      router.push(
+        roleRoutes[currentUser.role] || "/"
+      );
+
+
+    } else {
+
+      toast.error(
+        result.message ||
+        "Invalid credentials"
+      );
+
     }
+
+
+  } catch (error) {
+
+    toast.error(
+      error instanceof Error
+        ? error.message
+        : "Something went wrong"
+    );
+
+
+  } finally {
+
+    setIsLoading(false);
+
   }
+}
 
   return (
     <div className="flex min-h-screen w-full bg-white">

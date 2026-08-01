@@ -39,6 +39,7 @@ export function AuthProvider({
     const loadCurrentUser = async () => {
       try {
         const currentUser = await getCurrentUser();
+        console.log("CURRENT USER:", currentUser);
         setUser(currentUser);
       } catch (error) {
         console.error("Failed to load current user:", error);
