@@ -38,6 +38,8 @@ import { registerSchema, RegisterFormData } from "@/schemas/register.schema";
 // import { registerUserAction } from "@/actions/auth/register";
 import { watch } from "fs/promises";
 
+import { registerUser } from "@/services/AuthService";
+
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -114,7 +116,7 @@ export default function RegisterPage() {
     setIsLoading(true);
 
     try {
-      const result = await registerUserAction(data);
+      const result = await registerUser(data);
 
       if (result.success) {
         toast.success(result.message || "Account created successfully!");

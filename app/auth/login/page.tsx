@@ -99,8 +99,8 @@ export default function LoginPage() {
       if (result.success && result.data) {
         toast.success(result.message || "Welcome back!");
 
-        // Set cookies manually since backend sets httpOnly, but we need role for middleware
-        document.cookie = `userRole=${result.data.user.role}; path=/;`;
+       
+        
 
         const roleRoutes: Record<string, string> = {
           CUSTOMER: "/dashboard/customer",

@@ -63,8 +63,8 @@ export const getCurrentUser = async (): Promise<IUser | null> => {
   const result = await res.json();
   return result.data ?? null;
 };
-// login
 
+// ─── Logout ───────────────────────────────────────────
 export const logoutUser = async (): Promise<void> => {
   const cookieStore = await cookies();
   cookieStore.delete("accessToken");

@@ -1,5 +1,4 @@
 export type UserRole = "CUSTOMER" | "PROVIDER" | "ADMIN";
-
 export type UserStatus = "ACTIVE" | "SUSPENDED";
 
 export interface IUser {
@@ -35,4 +34,5 @@ export interface IApiResponse<T> {
 export interface ILoginResponse {
   accessToken: string;
   refreshToken: string;
+  user: IUser;
 }
