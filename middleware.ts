@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 const PUBLIC_ROUTES = ["/", "/gear", "/auth/login", "/auth/register", "/payment/success", "/payment/cancel"];
-const AUTH_ROUTES = ["/auth/login", "/auth/register"];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -25,11 +24,6 @@ export function middleware(request: NextRequest) {
       return NextResponse.redirect(loginUrl);
     }
     return NextResponse.next();
-  }
-
-  // Logged in — block auth routes
-  if (AUTH_ROUTES.includes(pathname)) {
-    return NextResponse.redirect(new URL("/", request.url));
   }
 
   return NextResponse.next();
