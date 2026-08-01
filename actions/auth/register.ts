@@ -8,7 +8,7 @@ export async function registerUserAction(payload: IRegisterPayload) {
     const response = await registerUser(payload);
     return {
       success: true,
-      message: response.message || "Registration successful!",
+      message: response.message || "Account created successfully!",
       data: response.data,
     };
   } catch (error) {
