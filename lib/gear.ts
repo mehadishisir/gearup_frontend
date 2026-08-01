@@ -1,0 +1,58 @@
+import { Gear } from "@/types/gear";
+
+export const featuredGear: Gear[] = [
+  {
+    id: "1",
+    name: "Mountain Bike",
+    image: "/images/bike.jpg",
+    category: "Cycling",
+    brand: "Trek",
+    pricePerDay: 1200,
+    available: true,
+  },
+  {
+    id: "2",
+    name: "Camping Tent",
+    image: "/images/tent.jpg",
+    category: "Camping",
+    brand: "NatureHike",
+    pricePerDay: 900,
+    available: true,
+  },
+  {
+    id: "3",
+    name: "Football",
+    image: "/images/football.jpg",
+    category: "Sports",
+    brand: "Nike",
+    pricePerDay: 300,
+    available: false,
+  },
+  {
+    id: "4",
+    name: "Kayak",
+    image: "/images/kayak.jpg",
+    category: "Water Sports",
+    brand: "Aqua",
+    pricePerDay: 1800,
+    available: true,
+  },
+  {
+    id: "5",
+    name: "Climbing Rope",
+    image: "/images/rope.jpg",
+    category: "Climbing",
+    brand: "Black Diamond",
+    pricePerDay: 500,
+    available: true,
+  },
+  {
+    id: "6",
+    name: "Basketball",
+    image: "/images/basketball.jpg",
+    category: "Sports",
+    brand: "Wilson",
+    pricePerDay: 250,
+    available: true,
+  },
+];
