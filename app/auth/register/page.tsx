@@ -35,7 +35,7 @@ import {
 } from "@/components/ui/card";
 
 import { registerSchema, RegisterFormData } from "@/schemas/register.schema";
-import { registerUserAction } from "@/actions/auth/register";
+// import { registerUserAction } from "@/actions/auth/register";
 import { watch } from "fs/promises";
 
 const containerVariants = {
