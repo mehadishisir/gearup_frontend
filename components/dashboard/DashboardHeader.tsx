@@ -3,6 +3,7 @@
 import {
   Bell,
   ChevronDown,
+  LogOut,
 } from "lucide-react";
 
 import {
@@ -10,12 +11,42 @@ import {
   AvatarFallback,
 } from "@/components/ui/avatar";
 
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+
 import { useAuth } from "@/providers/AuthProvider";
+import { logoutUser } from "@/services/AuthService";
 
 
 export default function DashboardHeader() {
 
   const { user } = useAuth();
+  const router = useRouter();
+
+
+  const handleLogout = async () => {
+
+    try {
+
+      await logoutUser();
+
+      toast.success(
+        "Logged out successfully"
+      );
+
+      router.push("/auth/login");
+      router.refresh();
+
+
+    } catch {
+
+      toast.error(
+        "Logout failed"
+      );
+
+    }
+
+  };
 
 
   return (
@@ -36,7 +67,6 @@ export default function DashboardHeader() {
       "
     >
 
-
       {/* Left */}
 
       <div>
@@ -48,7 +78,7 @@ export default function DashboardHeader() {
             text-slate-900
           "
         >
-          Welcome back,
+          Welcome back, {user?.name || "User"}
         </h2>
 
 
@@ -62,8 +92,6 @@ export default function DashboardHeader() {
         </p>
 
       </div>
-
-
 
 
 
@@ -111,7 +139,6 @@ export default function DashboardHeader() {
           />
 
         </button>
-
 
 
 
@@ -180,6 +207,38 @@ export default function DashboardHeader() {
               text-slate-400
             "
           />
+
+
+          {/* Logout */}
+
+          <button
+            onClick={handleLogout}
+            className="
+              ml-2
+              flex
+              items-center
+              gap-2
+              rounded-lg
+              px-3
+              py-2
+              text-sm
+              font-medium
+              text-red-500
+              transition
+              hover:bg-red-50
+            "
+          >
+
+            <LogOut
+              className="h-4 w-4"
+            />
+
+            <span className="hidden md:block">
+              Logout
+            </span>
+
+          </button>
+
 
         </div>
 

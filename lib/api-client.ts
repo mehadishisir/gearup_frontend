@@ -1,6 +1,4 @@
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL ||
-  "https://gear-up-backend-one.vercel.app/api";
+const API_BASE_URL = "/api";
 
 
 interface ApiOptions extends RequestInit {

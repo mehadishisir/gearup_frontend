@@ -1,4 +1,5 @@
-import { apiFetch } from "@/lib/api";
+import { apiFetch } from "@/lib/api-client";
+
 
 
 export interface CreateGearPayload {
