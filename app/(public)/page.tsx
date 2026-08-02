@@ -15,16 +15,15 @@ import { apiFetch } from "@/lib/api-client";
 
 interface Gear {
   id: string;
-  title: string;
+  name: string;
   brand?: string;
-  pricePerDay: number;
+  price: string;
   images: string[];
-  isAvailable: boolean;
+  available: boolean;
   category: {
     name: string;
   };
 }
-
 const categories = [
   "All",
   "Camping",
@@ -39,19 +38,29 @@ export default function GearPage() {
   const [activeCategory, setActiveCategory] = useState("All");
 
   const {
-    data: gearList = [],
-    isLoading,
-  } = useQuery({
-    queryKey: ["gear"],
-    queryFn: async () => {
-      const res = await apiFetch<{ data: Gear[] }>("/gear");
-      return res.data;
-    },
-  });
+  data: gearList = [],
+  isLoading,
+  error,
+} = useQuery({
+  queryKey: ["gear"],
+  queryFn: async () => {
+    const res = await apiFetch<{ data: Gear[] }>("/gear");
+
+    console.log("GEAR API:", res);
+
+    return res.data;
+  },
+});
+
+console.log("GEAR LIST:", gearList);
+
+if (error) {
+  console.log("GEAR ERROR:", error.message);
+}
 
   const filtered = gearList.filter((gear) => {
     const matchesSearch =
-      gear.title.toLowerCase().includes(search.toLowerCase()) ||
+      gear.name.toLowerCase().includes(search.toLowerCase()) ||
       gear.brand?.toLowerCase().includes(search.toLowerCase());
 
     const matchesCategory =
@@ -143,7 +152,7 @@ export default function GearPage() {
                       gear.images?.[0] ||
                       "/placeholder-gear.jpg"
                     }
-                    alt={gear.title}
+                    alt={gear.name}
                     fill
                     className="object-cover transition-transform duration-300 group-hover:scale-105"
                   />
@@ -162,12 +171,12 @@ export default function GearPage() {
 
                     <span
                       className={`text-xs font-medium ${
-                        gear.isAvailable
+                        gear.available
                           ? "text-emerald-600"
                           : "text-red-500"
                       }`}
                     >
-                      {gear.isAvailable
+                      {gear.available
                         ? "Available"
                         : "Rented"}
                     </span>
@@ -176,7 +185,7 @@ export default function GearPage() {
 
 
                   <h3 className="font-semibold text-slate-900">
-                    {gear.title}
+                    {gear.name}
                   </h3>
 
 
@@ -186,7 +195,7 @@ export default function GearPage() {
 
 
                   <p className="mt-3 text-xl font-bold text-slate-900">
-                    ৳{gear.pricePerDay}
+                    ${gear.price}
 
                     <span className="ml-1 text-sm font-normal text-slate-400">
                       / day

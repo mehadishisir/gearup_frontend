@@ -23,16 +23,16 @@ import { apiFetch } from "@/lib/api-client";
 import { useAuth } from "@/providers/AuthProvider";
 import { format, differenceInCalendarDays } from "date-fns";
 import type { DateRange } from "react-day-picker";
-
+import { createRental } from "@/services/RentalService";
 interface GearDetail {
   id: string;
-  title: string;
+  name: string;
   description: string;
   category: { name: string };
   brand?: string;
-  pricePerDay: number;
+  price: string;
   images: string[];
-  isAvailable: boolean;
+  available: boolean;
   avgRating?: number;
   provider: {
     name: string;
@@ -58,33 +58,45 @@ export default function GearDetailPage() {
   },
 });
 
-  const rentMutation = useMutation({
-    mutationFn: () =>
-      apiFetch<{ data: { checkoutUrl: string } }>("/rentals", {
-        method: "POST",
-        body: JSON.stringify({
+ const rentMutation = useMutation({
+  mutationFn: () => {
+    if (!range?.from || !range?.to) {
+      throw new Error("Please select rental dates");
+    }
+
+    return createRental({
+      startDate: format(
+        range.from,
+        "yyyy-MM-dd"
+      ),
+      endDate: format(
+        range.to,
+        "yyyy-MM-dd"
+      ),
+      items: [
+        {
           gearItemId: id,
-          startDate: range?.from
-            ? format(range.from, "yyyy-MM-dd")
-            : undefined,
-          endDate: range?.to
-            ? format(range.to, "yyyy-MM-dd")
-            : undefined,
-        }),
-      }),
+          quantity: 1,
+        },
+      ],
+    });
+  },
 
-    onSuccess: (res) => {
-      toast.success("Redirecting to payment...");
+  onSuccess: (res) => {
+    toast.success("Rental created successfully");
 
-      setTimeout(() => {
-        window.location.href = res.data.checkoutUrl;
-      }, 500);
-    },
+    console.log(
+      "RENTAL RESPONSE:",
+      res
+    );
 
-    onError: (err: Error) => {
-      toast.error(err.message);
-    },
-  });
+    router.push("/dashboard/rentals");
+  },
+
+  onError: (err: Error) => {
+    toast.error(err.message);
+  },
+});
 
   function handleRentNow() {
     if (!isAuthenticated) {
@@ -122,7 +134,7 @@ export default function GearDetailPage() {
       ? differenceInCalendarDays(range.to, range.from) || 1
       : 0;
 
-  const totalPrice = days * gear.pricePerDay;
+  const totalPrice = days * parseFloat(gear.price);
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] py-8">
@@ -137,12 +149,17 @@ export default function GearDetailPage() {
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
           <div className="relative aspect-4/3 overflow-hidden rounded-2xl bg-slate-100">
-            <Image
-              src={gear.images[0] ?? "/placeholder-gear.jpg"}
-              alt={gear.title}
-              fill
-              className="object-cover"
-            />
+   <Image
+  src={
+    gear.images?.length
+      ? gear.images[0]
+      : "/images/hero.jpg"
+  }
+  alt={gear.name || "Gear image"}
+  fill
+  className="object-cover"
+  unoptimized
+/>
           </div>
 
           <div>
@@ -153,17 +170,17 @@ export default function GearDetailPage() {
 
               <span
                 className={`text-sm font-medium ${
-                  gear.isAvailable
+                  gear.available
                     ? "text-emerald-600"
                     : "text-red-500"
                 }`}
               >
-                {gear.isAvailable ? "Available" : "Out of Stock"}
+                {gear.available ? "Available" : "Out of Stock"}
               </span>
             </div>
 
             <h1 className="text-3xl font-bold text-slate-900">
-              {gear.title}
+              {gear.name}
             </h1>
 
             {gear.brand && (
@@ -187,7 +204,7 @@ export default function GearDetailPage() {
 
             <div className="mt-8">
               <p className="text-3xl font-bold text-slate-900">
-                ৳{gear.pricePerDay}
+                ${gear.price}
                 <span className="text-lg font-normal text-slate-400">
                   {" "}
                   / day
@@ -215,51 +232,47 @@ export default function GearDetailPage() {
             </div>
 
             <Card className="mt-8 border-0 shadow-sm">
-              <CardContent className="p-4">
-                <h3 className="mb-3 font-semibold text-slate-900">
-                  Select rental dates
-                </h3>
+  <CardContent className="p-4">
+    <h3 className="mb-3 font-semibold text-slate-900">
+      Select rental dates
+    </h3>
 
-                <Popover>
-                  <PopoverTrigger>
-                    <Button
-                      variant="outline"
-                      className="w-full justify-start"
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
+    <Popover>
+      <PopoverTrigger
+        className="flex w-full items-center justify-start rounded-md border px-4 py-2 text-sm"
+      >
+        <CalendarIcon className="mr-2 h-4 w-4" />
 
-                      {range?.from && range?.to
-                        ? `${format(
-                            range.from,
-                            "d MMM"
-                          )} — ${format(range.to, "d MMM")}`
-                        : "Pick a date range"}
-                    </Button>
-                  </PopoverTrigger>
+        {range?.from && range?.to
+          ? `${format(range.from, "d MMM")} — ${format(
+              range.to,
+              "d MMM"
+            )}`
+          : "Pick a date range"}
+      </PopoverTrigger>
 
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="range"
-                      selected={range}
-                      onSelect={setRange}
-                      disabled={{
-                        before: new Date(),
-                      }}
-                    />
-                  </PopoverContent>
-                </Popover>
+      <PopoverContent className="w-auto p-0">
+        <Calendar
+          mode="range"
+          selected={range}
+          onSelect={setRange}
+          disabled={{
+            before: new Date(),
+          }}
+        />
+      </PopoverContent>
+    </Popover>
 
-                {days > 0 && (
-                  <p className="mt-3 text-sm text-slate-600">
-                    {days} day{days > 1 ? "s" : ""} × ৳
-                    {gear.pricePerDay} ={" "}
-                    <span className="font-semibold text-slate-900">
-                      ৳{totalPrice}
-                    </span>
-                  </p>
-                )}
-              </CardContent>
-            </Card>
+    {days > 0 && (
+      <p className="mt-3 text-sm text-slate-600">
+        {days} day{days > 1 ? "s" : ""} × ৳{gear.price} ={" "}
+        <span className="font-semibold text-slate-900">
+          ৳{totalPrice.toFixed(2)}
+        </span>
+      </p>
+    )}
+  </CardContent>
+</Card>
 
             <div className="mt-8 flex gap-4">
               <Button
@@ -267,7 +280,7 @@ export default function GearDetailPage() {
                 className="flex-1 bg-orange-500 text-white hover:bg-orange-600"
                 onClick={handleRentNow}
                 disabled={
-                  !gear.isAvailable ||
+                  !gear.available ||
                   rentMutation.isPending
                 }
               >
