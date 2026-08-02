@@ -4,263 +4,151 @@ import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { getMyRentals } from "@/services/RentalService";
 import { format } from "date-fns";
-import { ArrowRight, CalendarDays, CreditCard } from "lucide-react";
-
+import {
+  ArrowRight,
+  CalendarDays,
+  CreditCard,
+  Package,
+} from "lucide-react";
 
 export default function RentalsPage() {
-
-  const {
-    data,
-    isLoading,
-  } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["my-rentals"],
     queryFn: getMyRentals,
   });
 
-
-
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center text-slate-500">
-        Loading rentals...
+      <div className="flex min-h-screen items-center justify-center">
+        <p className="text-slate-500">Loading rentals...</p>
       </div>
     );
   }
 
-
-
   return (
-
-    <div className="min-h-screen bg-[#F8FAFC] p-8">
-
-      <div className="mx-auto max-w-5xl">
-
-
-        <div className="mb-8">
-
+    <div className="min-h-screen bg-slate-50 py-10">
+      <div className="mx-auto max-w-6xl px-4">
+        {/* Header */}
+        <div className="mb-10">
           <h1 className="text-3xl font-bold text-slate-900">
             My Rentals
           </h1>
 
           <p className="mt-2 text-slate-500">
-            Manage and track your rental orders
+            Manage and track all your rental orders.
           </p>
-
         </div>
 
-
-
-
+        {/* Empty */}
         {!data?.data?.length && (
+          <div className="rounded-2xl bg-white p-12 text-center shadow-sm">
+            <Package className="mx-auto h-14 w-14 text-slate-300" />
 
-          <div className="rounded-2xl bg-white p-10 text-center shadow-sm">
-
-            <p className="text-lg font-medium text-slate-900">
-              No rentals found
-            </p>
+            <h2 className="mt-4 text-xl font-semibold text-slate-900">
+              No Rentals Yet
+            </h2>
 
             <p className="mt-2 text-slate-500">
-              Start renting gear for your next adventure
+              Browse gear and place your first rental order.
             </p>
 
+            <Link
+              href="/gear"
+              className="mt-6 inline-flex rounded-xl bg-orange-500 px-5 py-3 font-medium text-white transition hover:bg-orange-600"
+            >
+              Browse Gear
+            </Link>
           </div>
-
         )}
 
-
-
-
-
-        <div className="space-y-5">
-
-
-          {data?.data?.map((rental)=>(
-
-
+        <div className="space-y-6">
+          {data?.data?.map((rental) => (
             <Link
               key={rental.id}
               href={`/dashboard/rentals/${rental.id}`}
+              className="group block"
             >
-
-
-              <div
-                className="
-                rounded-2xl 
-                bg-white 
-                p-6 
-                shadow-sm 
-                transition-all
-                hover:-translate-y-1
-                hover:shadow-lg
-                cursor-pointer
-                "
-              >
-
-
-
-                <div className="flex items-center justify-between">
-
-
+              <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-300 group-hover:-translate-y-1 group-hover:border-orange-300 group-hover:shadow-xl">
+                {/* Top */}
+                <div className="flex items-start justify-between">
                   <div>
-
-                    <h2 className="text-lg font-semibold text-slate-900">
+                    <h2 className="text-xl font-semibold text-slate-900">
                       Rental Order
                     </h2>
 
-
-                    <p className="mt-1 text-xs text-slate-400">
-                      ID: {rental.id.slice(0,8)}...
+                    <p className="mt-1 font-mono text-xs text-slate-400">
+                      #{rental.id.slice(0, 8)}
                     </p>
-
                   </div>
 
-
-
-
-
                   <span
-                    className={`
-                    rounded-full 
-                    px-3 
-                    py-1 
-                    text-xs 
-                    font-semibold
-                    
-                    ${
+                    className={`rounded-full px-4 py-1 text-xs font-semibold ${
                       rental.status === "PLACED"
-                      ? "bg-blue-100 text-blue-700"
-                      : rental.status === "COMPLETED"
-                      ? "bg-green-100 text-green-700"
-                      : "bg-slate-100 text-slate-700"
-                    }
-                    `}
+                        ? "bg-blue-100 text-blue-700"
+                        : rental.status === "COMPLETED"
+                        ? "bg-green-100 text-green-700"
+                        : rental.status === "CANCELLED"
+                        ? "bg-red-100 text-red-600"
+                        : "bg-slate-100 text-slate-700"
+                    }`}
                   >
                     {rental.status}
                   </span>
-
-
                 </div>
 
-
-
-
-
-
-                <div className="mt-6 grid gap-4 sm:grid-cols-3">
-
-
+                {/* Info */}
+                <div className="mt-6 grid gap-4 md:grid-cols-3">
                   <div className="rounded-xl bg-slate-50 p-4">
-
                     <div className="flex items-center gap-2 text-sm text-slate-500">
-
-                      <CalendarDays className="h-4 w-4"/>
-
-                      Start
-
+                      <CalendarDays className="h-4 w-4 text-orange-500" />
+                      Start Date
                     </div>
 
-
-                    <p className="mt-1 font-medium text-slate-900">
-
+                    <p className="mt-2 font-semibold text-slate-900">
                       {format(
                         new Date(rental.startDate),
                         "dd MMM yyyy"
                       )}
-
                     </p>
-
-
                   </div>
 
-
-
-
-
-
                   <div className="rounded-xl bg-slate-50 p-4">
-
                     <div className="flex items-center gap-2 text-sm text-slate-500">
-
-                      <CalendarDays className="h-4 w-4"/>
-
-                      End
-
+                      <CalendarDays className="h-4 w-4 text-orange-500" />
+                      End Date
                     </div>
 
-
-                    <p className="mt-1 font-medium text-slate-900">
-
+                    <p className="mt-2 font-semibold text-slate-900">
                       {format(
                         new Date(rental.endDate),
                         "dd MMM yyyy"
                       )}
-
                     </p>
-
-
                   </div>
-
-
-
-
-
-
 
                   <div className="rounded-xl bg-slate-50 p-4">
-
                     <div className="flex items-center gap-2 text-sm text-slate-500">
-
-                      <CreditCard className="h-4 w-4"/>
-
-                      Amount
-
+                      <CreditCard className="h-4 w-4 text-orange-500" />
+                      Total Amount
                     </div>
 
-
-                    <p className="mt-1 font-bold text-slate-900">
-
+                    <p className="mt-2 text-xl font-bold text-slate-900">
                       ৳{rental.totalAmount}
-
                     </p>
-
-
                   </div>
-
-
-
                 </div>
 
+                {/* Footer */}
+                <div className="mt-6 flex items-center justify-end text-sm font-semibold text-orange-600">
+                  <span>View Details</span>
 
-
-
-
-
-                <div className="mt-5 flex items-center justify-end gap-2 text-sm font-medium text-orange-600">
-
-                  View Details
-
-                  <ArrowRight className="h-4 w-4"/>
-
+                  <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
                 </div>
-
-
-
               </div>
-
-
             </Link>
-
-
           ))}
-
-
         </div>
-
-
       </div>
-
-
     </div>
-
   );
 }
