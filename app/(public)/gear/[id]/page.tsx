@@ -59,38 +59,27 @@ export default function GearDetailPage() {
 });
 
  const rentMutation = useMutation({
-  mutationFn: () => {
+  mutationFn: async () => {
     if (!range?.from || !range?.to) {
       throw new Error("Please select rental dates");
     }
 
-    return createRental({
-      startDate: format(
-        range.from,
-        "yyyy-MM-dd"
-      ),
-      endDate: format(
-        range.to,
-        "yyyy-MM-dd"
-      ),
-      items: [
-        {
-          gearItemId: id,
-          quantity: 1,
-        },
-      ],
+    const rentalRes = await createRental({
+      startDate: format(range.from, "yyyy-MM-dd"),
+      endDate: format(range.to, "yyyy-MM-dd"),
+      items: [{ gearItemId: id, quantity: 1 }],
     });
+
+    const paymentRes = await apiFetch<{ data: { checkoutUrl: string } }>("/payments/create", {
+      method: "POST",
+      body: JSON.stringify({ rentalOrderId: rentalRes.data.id }),
+    });
+
+    return paymentRes;
   },
 
   onSuccess: (res) => {
-    toast.success("Rental created successfully");
-
-    console.log(
-      "RENTAL RESPONSE:",
-      res
-    );
-
-    router.push("/dashboard/rentals");
+    window.location.href = res.data.checkoutUrl;
   },
 
   onError: (err: Error) => {

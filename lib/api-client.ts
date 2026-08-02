@@ -1,45 +1,45 @@
-const API_BASE_URL = "/api";
-
+const API_BASE_URL =
+  typeof window === "undefined"
+    ? "https://gear-up-backend-one.vercel.app/api"
+    : "/api";
 
 interface ApiOptions extends RequestInit {
   headers?: Record<string, string>;
 }
 
+function getAuthToken(): string | null {
+  if (typeof window === "undefined") return null;
+  const token = localStorage.getItem("accessToken");
+  if (token) return token;
+  const match = document.cookie.match(/accessToken=([^;]+)/);
+  return match ? match[1] : null;
+}
 
 export async function apiFetch<T>(
   endpoint: string,
   options?: ApiOptions
 ): Promise<T> {
+  const token = getAuthToken();
+  const url = `${API_BASE_URL}${endpoint}`;
 
-  const response = await fetch(
-    `${API_BASE_URL}${endpoint}`,
-    {
-      ...options,
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...options?.headers,
+    },
+    credentials: "include",
+  });
 
-      headers: {
-        "Content-Type": "application/json",
-        ...options?.headers,
-      },
-
-      credentials: "include",
-    }
-  );
-
-
-  const result = await response.json().catch(
-    () => null
-  );
-
+  const result = await response.json().catch(() => null);
 
   if (!response.ok) {
-
+    console.error("API Error:", { url, status: response.status, result });
     throw new Error(
-      result?.message ||
-      "Something went wrong"
+      result?.message || `Request failed with status ${response.status}`
     );
-
   }
-
 
   return result;
 }
