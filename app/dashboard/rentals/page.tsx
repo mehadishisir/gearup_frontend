@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { getMyRentals } from "@/services/RentalService";
-import { apiFetch } from "@/lib/api-client";
+import { createPaymentSession } from "@/services/PaymentService"; // ← NEW
 import { format } from "date-fns";
 import {
   ArrowRight,
@@ -20,11 +20,7 @@ export default function RentalsPage() {
   });
 
   const payMutation = useMutation({
-    mutationFn: (rentalOrderId: string) =>
-      apiFetch<{ data: { checkoutUrl: string } }>("/payments/create", {
-        method: "POST",
-        body: JSON.stringify({ rentalOrderId }),
-      }),
+    mutationFn: createPaymentSession, // ← CHANGED
     onSuccess: (res) => {
       window.location.href = res.data.checkoutUrl;
     },
