@@ -1,46 +1,46 @@
-import { apiFetch } from "@/lib/api-client";
-import {
-  IUser,
-  IRegisterPayload,
-  ILoginPayload,
-  IApiResponse,
-  ILoginResponse,
-} from "@/types/auth";
+"use server";
 
-export const registerUser = async (
-  payload: IRegisterPayload
-): Promise<IApiResponse<IUser>> => {
-  return apiFetch("/auth/register", {
-    method: "POST",
-    body: JSON.stringify(payload),
-  });
-};
+import { cookies } from "next/headers";
 
-export const loginUser = async (
-  payload: ILoginPayload
-): Promise<IApiResponse<ILoginResponse>> => {
-  return apiFetch("/auth/login", {
-    method: "POST",
-    body: JSON.stringify(payload),
-  });
-};
+export async function getAllUsers() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("accessToken")?.value;
 
-export const getCurrentUser = async (): Promise<IUser | null> => {
-  try {
-    const result = await apiFetch<IApiResponse<IUser>>("/auth/me", {
-      method: "GET",
-    });
-    return result.data ?? null;
-  } catch {
-    return null;
-  }
-};
+  if (!token) throw new Error("Unauthorized");
 
-export const logoutUser = async (): Promise<void> => {
-  const res = await fetch("/api/auth/logout", {
-    method: "POST",
-  });
-  if (!res.ok) {
-    throw new Error("Logout failed");
-  }
-};
+  const res = await fetch(
+    "https://gear-up-backend-one.vercel.app/api/admin/users",
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const result = await res.json();
+  if (!res.ok) throw new Error(result?.message || "Failed to fetch users");
+  return result;
+}
+
+export async function updateUserStatus(userId: string, status: string) {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("accessToken")?.value;
+
+  if (!token) throw new Error("Unauthorized");
+
+  const res = await fetch(
+    `https://gear-up-backend-one.vercel.app/api/admin/users/${userId}`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ status }),
+    }
+  );
+
+  const result = await res.json();
+  if (!res.ok) throw new Error(result?.message || "Failed to update user");
+  return result;
+}
