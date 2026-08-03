@@ -1,5 +1,5 @@
 "use client";
-
+import ReviewForm from "@/components/review/ReviewForm";
 import Link from "next/link";
 import Image from "next/image";
 import { useParams } from "next/navigation";
@@ -13,8 +13,7 @@ import {
   CalendarDays,
   CreditCard,
   Package,
-  User,
-  MapPin,
+  
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -53,11 +52,12 @@ export default function RentalDetailsPage() {
   }
 
   const statusColors: Record<string, string> = {
-    PLACED: "bg-blue-100 text-blue-700",
-    CONFIRMED: "bg-purple-100 text-purple-700",
-    COMPLETED: "bg-green-100 text-green-700",
-    CANCELLED: "bg-red-100 text-red-600",
-  };
+  PLACED: "bg-blue-100 text-blue-700",
+  CONFIRMED: "bg-purple-100 text-purple-700",
+  COMPLETED: "bg-green-100 text-green-700",
+  RETURNED: "bg-emerald-100 text-emerald-700",
+  CANCELLED: "bg-red-100 text-red-600",
+};
 
   return (
     <div className="min-h-screen bg-slate-50 p-8">
@@ -139,6 +139,14 @@ export default function RentalDetailsPage() {
                 </div>
               </CardContent>
             </Card>
+            {rental.status === "RETURNED" &&
+  rental.items?.map((item) => (
+    <ReviewForm
+      key={item.id}
+      rentalOrderId={rental.id}
+      gearItemId={item.gearItem.id}
+    />
+  ))}
           </div>
 
           <div className="space-y-6">

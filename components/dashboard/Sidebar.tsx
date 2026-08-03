@@ -105,7 +105,7 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   const { user } = useAuth();
-
+  
 
   const menuItems =
     user?.role === "ADMIN"
