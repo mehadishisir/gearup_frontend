@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { getMyRentals } from "@/services/RentalService";
-import { createPaymentSession } from "@/services/PaymentService"; // ← NEW
+import { createPaymentSession } from "@/services/PaymentService";
 import { format } from "date-fns";
 import {
   ArrowRight,
@@ -20,9 +20,9 @@ export default function RentalsPage() {
   });
 
   const payMutation = useMutation({
-    mutationFn: createPaymentSession, // ← CHANGED
+    mutationFn: createPaymentSession,
     onSuccess: (res) => {
-      window.location.href = res.data.checkoutUrl;
+      window.location.href = res.data.paymentUrl;
     },
     onError: (err: Error) => toast.error(err.message),
   });

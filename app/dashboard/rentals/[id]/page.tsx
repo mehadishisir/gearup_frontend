@@ -29,7 +29,7 @@ export default function RentalDetailsPage() {
   const payMutation = useMutation({
     mutationFn: () => createPaymentSession(id),
     onSuccess: (res) => {
-      window.location.href = res.data.checkoutUrl;
+      window.location.href = res.data.paymentUrl;
     },
     onError: (err: Error) => toast.error(err.message),
   });
