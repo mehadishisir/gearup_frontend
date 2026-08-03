@@ -9,10 +9,7 @@ interface ApiOptions extends RequestInit {
 
 function getAuthToken(): string | null {
   if (typeof window === "undefined") return null;
-  const token = localStorage.getItem("accessToken");
-  if (token) return token;
-  const match = document.cookie.match(/accessToken=([^;]+)/);
-  return match ? match[1] : null;
+  return localStorage.getItem("accessToken");
 }
 
 export async function apiFetch<T>(
@@ -22,30 +19,22 @@ export async function apiFetch<T>(
   const token = getAuthToken();
   const url = `${API_BASE_URL}${endpoint}`;
 
-  try {
-    const response = await fetch(url, {
-      ...options,
-      headers: {
-        "Content-Type": "application/json",
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        ...options?.headers,
-      },
-      credentials: "include",
-    });
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...options?.headers,
+    },
+    credentials: "include",
+  });
 
-    const text = await response.text();
-    const result = text ? JSON.parse(text) : null;
+  const text = await response.text();
+  const result = text ? JSON.parse(text) : null;
 
-    if (!response.ok) {
-      console.error("API Error:", { url, status: response.status, result });
-      throw new Error(
-        result?.message || `Request failed with status ${response.status}`
-      );
-    }
-
-    return result;
-  } catch (err) {
-    console.error("Fetch Error:", { url, error: err });
-    throw err instanceof Error ? err : new Error("Network error");
+  if (!response.ok) {
+    throw new Error(result?.message || `Request failed (${response.status})`);
   }
+
+  return result;
 }

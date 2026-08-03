@@ -1,3 +1,4 @@
+
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
@@ -6,14 +7,13 @@ const PUBLIC_ROUTES = [
   "/gear",
   "/auth/login",
   "/auth/register",
-  "/payment/success",
-  "/payment/cancel",
+  "/payment-success",
+  "/payment-cancel",
 ];
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const token = request.cookies.get("accessToken")?.value;
-
 
   if (
     pathname.startsWith("/_next") ||
@@ -30,7 +30,6 @@ export function middleware(request: NextRequest) {
     PUBLIC_ROUTES.some((route) => pathname === route) ||
     pathname.startsWith("/gear/");
 
- 
   if (!token) {
     if (!isPublicRoute) {
       const loginUrl = new URL("/auth/login", request.url);
@@ -39,7 +38,6 @@ export function middleware(request: NextRequest) {
     }
     return NextResponse.next();
   }
-
 
   if (token && (pathname === "/auth/login" || pathname === "/auth/register")) {
     const redirectTo = request.nextUrl.searchParams.get("redirectTo") || "/dashboard";

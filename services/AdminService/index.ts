@@ -1,33 +1,46 @@
-"use server";
-
-import { cookies } from "next/headers";
 import { apiFetch } from "@/lib/api-client";
+import {
+  IUser,
+  IRegisterPayload,
+  ILoginPayload,
+  IApiResponse,
+  ILoginResponse,
+} from "@/types/auth";
 
-export interface IAdminUser {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  status: string;
-}
-
-async function authHeader(): Promise<Record<string, string>> {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("accessToken")?.value;
-  if (!token) return {};
-  return { Authorization: `Bearer ${token}` };
-}
-
-export const getAllUsers = async () => {
-  return apiFetch<{ data: IAdminUser[] }>("/admin/users", {
-    headers: await authHeader(),
+export const registerUser = async (
+  payload: IRegisterPayload
+): Promise<IApiResponse<IUser>> => {
+  return apiFetch("/auth/register", {
+    method: "POST",
+    body: JSON.stringify(payload),
   });
 };
 
-export const updateUserStatus = async (userId: string, status: "ACTIVE" | "SUSPENDED") => {
-  return apiFetch<{ data: IAdminUser }>(`/admin/users/${userId}`, {
-    method: "PATCH",
-    body: JSON.stringify({ status }),
-    headers: await authHeader(),
+export const loginUser = async (
+  payload: ILoginPayload
+): Promise<IApiResponse<ILoginResponse>> => {
+  return apiFetch("/auth/login", {
+    method: "POST",
+    body: JSON.stringify(payload),
   });
+};
+
+export const getCurrentUser = async (): Promise<IUser | null> => {
+  try {
+    const result = await apiFetch<IApiResponse<IUser>>("/auth/me", {
+      method: "GET",
+    });
+    return result.data ?? null;
+  } catch {
+    return null;
+  }
+};
+
+export const logoutUser = async (): Promise<void> => {
+  const res = await fetch("/api/auth/logout", {
+    method: "POST",
+  });
+  if (!res.ok) {
+    throw new Error("Logout failed");
+  }
 };
