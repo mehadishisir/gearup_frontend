@@ -29,5 +29,5 @@ export async function createPaymentSession(rentalOrderId: string) {
     throw new Error(result?.message || `Payment failed (${res.status})`);
   }
 
-  return result as { data: { checkoutUrl: string } };
+  return result as { data: { paymentUrl: string } };
 }

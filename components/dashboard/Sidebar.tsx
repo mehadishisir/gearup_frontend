@@ -59,7 +59,7 @@ const providerMenu = [
   },
   {
     title: "Rental Requests",
-    href: "/dashboard/provider/requests",
+    href: "/dashboard/provider/orders",
     icon: ClipboardList,
   },
   {

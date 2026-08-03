@@ -13,87 +13,57 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 
+import { apiFetch } from "@/lib/api-client";
+
 import {
   gearSchema,
   GearFormData,
 } from "@/schemas/gear.schema";
 
-
-
 export default function AddGearForm() {
-
-
   const [loading, setLoading] = useState(false);
 
-
-
   const {
-    register,
-    handleSubmit,
-    reset,
-    formState:{
-      errors
-    }
+  register,
+  handleSubmit,
+  reset,
+  formState: { errors }
+} = useForm({
+  resolver: zodResolver(gearSchema),
+  defaultValues: {
+    name: "",
+    categoryId: "",
+    price: 0,
+    stock: 0,
+    description: "",
+    available: true,
+    brand: "",
+  },
+});
 
-  } = useForm<GearFormData>({
-
-    resolver:zodResolver(gearSchema),
-
-    defaultValues:{
-      name:"",
-      category:"",
-      price:"",
-      description:"",
-    }
-
-  });
-
-
-
-
-  const onSubmit = async(data:GearFormData)=>{
-
-    try{
-
+  const onSubmit = async (data: GearFormData) => {
+    try {
       setLoading(true);
 
+      await apiFetch("/provider/gear", {
+        method: "POST",
+        body: JSON.stringify({
+          ...data,
+          images: ["https://images.unsplash.com/photo-1485965120184-e220f721d03e"],
+        }),
+      });
 
-      console.log(data);
-
-
-      /*
-        API integration
-        will be added here
-      */
-
-
-      toast.success(
-        "Gear added successfully"
-      );
-
+      toast.success("Gear added successfully");
 
       reset();
-
-
-    }catch(error){
-
-      toast.error(
-        "Something went wrong"
-      );
-
-
-    }finally{
-
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Something went wrong");
+    } finally {
       setLoading(false);
-
     }
-
   };
 
-
-
   return (
-
     <form
       onSubmit={handleSubmit(onSubmit)}
       className="
@@ -104,105 +74,67 @@ export default function AddGearForm() {
         shadow-sm
       "
     >
-
-
       {/* Name */}
-
       <div className="space-y-2">
-
-        <Label>
-          Gear Name
-        </Label>
-
+        <Label>Gear Name</Label>
 
         <Input
           placeholder="Mountain Bike"
           {...register("name")}
         />
 
-
-        {
-          errors.name &&
-          (
-            <p className="text-sm text-red-500">
-              {errors.name.message}
-            </p>
-          )
-        }
-
+        {errors.name && (
+          <p className="text-sm text-red-500">{errors.name.message}</p>
+        )}
       </div>
 
-
-
-
       {/* Category */}
-
       <div className="space-y-2">
-
-        <Label>
-          Category
-        </Label>
-
+        <Label>Category</Label>
 
         <Input
           placeholder="Cycling"
-          {...register("category")}
+          {...register("categoryId")}
         />
 
-
-        {
-          errors.category &&
-          (
-            <p className="text-sm text-red-500">
-              {errors.category.message}
-            </p>
-          )
-        }
-
-
+        {errors.categoryId && (
+          <p className="text-sm text-red-500">{errors.categoryId.message}</p>
+        )}
       </div>
-
-
-
 
       {/* Price */}
-
       <div className="space-y-2">
-
-        <Label>
-          Rental Price
-        </Label>
-
+        <Label>Rental Price</Label>
 
         <Input
+          type="number"
           placeholder="20"
-          {...register("price")}
+          {...register("price", { valueAsNumber: true })}
         />
 
-
-        {
-          errors.price &&
-          (
-            <p className="text-sm text-red-500">
-              {errors.price.message}
-            </p>
-          )
-        }
-
+        {errors.price && (
+          <p className="text-sm text-red-500">{errors.price.message}</p>
+        )}
       </div>
 
+      {/* Stock */}
+      <div className="space-y-2">
+        <Label>Stock</Label>
 
+        <Input
+          type="number"
+          placeholder="5"
+          {...register("stock", { valueAsNumber: true })}
+        />
 
+        {errors.stock && (
+          <p className="text-sm text-red-500">{errors.stock.message}</p>
+        )}
+      </div>
 
       {/* Description */}
-
       <div className="space-y-2">
-
-
-        <Label>
-          Description
-        </Label>
-
+        <Label>Description</Label>
 
         <Textarea
           placeholder="Describe your equipment..."
@@ -210,21 +142,10 @@ export default function AddGearForm() {
           {...register("description")}
         />
 
-
-        {
-          errors.description &&
-          (
-            <p className="text-sm text-red-500">
-              {errors.description.message}
-            </p>
-          )
-        }
-
-
+        {errors.description && (
+          <p className="text-sm text-red-500">{errors.description.message}</p>
+        )}
       </div>
-
-
-
 
       <Button
         disabled={loading}
@@ -235,36 +156,15 @@ export default function AddGearForm() {
           hover:bg-orange-600
         "
       >
-
-        {
-          loading
-          ?
-          (
-            <>
-              <Loader2
-                className="
-                  mr-2
-                  h-4
-                  w-4
-                  animate-spin
-                "
-              />
-
-              Adding...
-
-            </>
-          )
-          :
+        {loading ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Adding...
+          </>
+        ) : (
           "Add Gear"
-        }
-
-
+        )}
       </Button>
-
-
-
     </form>
-
   );
-
 }
