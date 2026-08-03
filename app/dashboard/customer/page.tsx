@@ -14,6 +14,27 @@ import {
   CreditCard,
 } from "lucide-react";
 
+interface RentalItem {
+  id: string;
+  quantity: number;
+  priceAtBooking: string;
+  gearItem: {
+    id: string;
+    name: string;
+    brand: string;
+    images: string[];
+  };
+}
+
+interface Rental {
+  id: string;
+  startDate: string;
+  endDate: string;
+  totalAmount: string;
+  status: string;
+  items?: RentalItem[];
+}
+
 export default function CustomerDashboardPage() {
   const { data, isLoading } = useQuery({
     queryKey: ["my-rentals"],
@@ -33,15 +54,15 @@ export default function CustomerDashboardPage() {
   const totalRentals = rentals.length;
 
   const placedRentals = rentals.filter(
-    (r) => r.status === "PLACED"
+    (r: Rental) => r.status === "PLACED"
   ).length;
 
   const completedRentals = rentals.filter(
-    (r) => r.status === "COMPLETED"
+    (r: Rental) => r.status === "COMPLETED"
   ).length;
 
   const cancelledRentals = rentals.filter(
-    (r) => r.status === "CANCELLED"
+    (r: Rental) => r.status === "CANCELLED"
   ).length;
 
   return (
@@ -56,8 +77,6 @@ export default function CustomerDashboardPage() {
             Welcome back! Here is a quick overview of your rentals.
           </p>
         </div>
-
-        {/* Summary Cards */}
 
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
           <div className="rounded-2xl bg-white p-6 shadow-sm">
@@ -117,8 +136,6 @@ export default function CustomerDashboardPage() {
           </div>
         </div>
 
-        {/* Recent Rentals */}
-
         <div className="mt-10 rounded-2xl bg-white p-6 shadow-sm">
           <div className="mb-6 flex items-center justify-between">
             <h2 className="text-xl font-semibold text-slate-900">
@@ -136,7 +153,7 @@ export default function CustomerDashboardPage() {
           {!rentals.length ? (
             <div className="py-10 text-center">
               <p className="text-slate-500">
-                You havenot rented anything yet.
+                You have not rented anything yet.
               </p>
 
               <Link
@@ -148,7 +165,7 @@ export default function CustomerDashboardPage() {
             </div>
           ) : (
             <div className="space-y-4">
-              {rentals.slice(0, 5).map((rental) => (
+              {rentals.slice(0, 5).map((rental: Rental) => (
                 <Link
                   key={rental.id}
                   href={`/dashboard/rentals/${rental.id}`}
@@ -170,6 +187,8 @@ export default function CustomerDashboardPage() {
                         className={`rounded-full px-3 py-1 text-xs font-semibold ${
                           rental.status === "PLACED"
                             ? "bg-blue-100 text-blue-700"
+                            : rental.status === "CONFIRMED"
+                            ? "bg-purple-100 text-purple-700"
                             : rental.status === "COMPLETED"
                             ? "bg-green-100 text-green-700"
                             : "bg-red-100 text-red-700"

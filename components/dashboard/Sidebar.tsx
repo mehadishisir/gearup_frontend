@@ -20,22 +20,22 @@ import { useAuth } from "@/providers/AuthProvider";
 const customerMenu = [
   {
     title: "Dashboard",
-    href: "/dashboard/customer",
+    href: "/dashboard",
     icon: LayoutDashboard,
   },
   {
     title: "My Rentals",
-    href: "/dashboard/customer/rentals",
+    href: "/dashboard/rentals",
     icon: Package,
   },
   {
     title: "Payment History",
-    href: "/dashboard/customer/payments",
+    href: "/dashboard/payments",
     icon: CreditCard,
   },
   {
     title: "Profile",
-    href: "/dashboard/customer/profile",
+    href: "/dashboard/profile",
     icon: UserCircle,
   },
 ];
