@@ -1,3 +1,5 @@
+"use client";
+
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import {
@@ -9,7 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { getAllUsers, updateUserStatus } from "@/services/AdminService";
-import type { User } from "@/services/AdminService"; // ← এই type import যোগ করো
+import type { User } from "@/services/AdminService";
 
 export default function AdminUsersPage() {
   const queryClient = useQueryClient();
@@ -55,7 +57,7 @@ export default function AdminUsersPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {users.map((user: User) => ( // ← : User type যোগ করো
+            {users.map((user: User) => (
               <TableRow key={user.id}>
                 <TableCell>{user.name}</TableCell>
                 <TableCell>{user.email}</TableCell>
