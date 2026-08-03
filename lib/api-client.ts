@@ -22,24 +22,30 @@ export async function apiFetch<T>(
   const token = getAuthToken();
   const url = `${API_BASE_URL}${endpoint}`;
 
-  const response = await fetch(url, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...options?.headers,
-    },
-    credentials: "include",
-  });
+  try {
+    const response = await fetch(url, {
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...options?.headers,
+      },
+      credentials: "include",
+    });
 
-  const result = await response.json().catch(() => null);
+    const text = await response.text();
+    const result = text ? JSON.parse(text) : null;
 
-  if (!response.ok) {
-    console.error("API Error:", { url, status: response.status, result });
-    throw new Error(
-      result?.message || `Request failed with status ${response.status}`
-    );
+    if (!response.ok) {
+      console.error("API Error:", { url, status: response.status, result });
+      throw new Error(
+        result?.message || `Request failed with status ${response.status}`
+      );
+    }
+
+    return result;
+  } catch (err) {
+    console.error("Fetch Error:", { url, error: err });
+    throw err instanceof Error ? err : new Error("Network error");
   }
-
-  return result;
 }

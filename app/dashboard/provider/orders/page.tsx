@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { getProviderOrders, updateOrderStatus, IRentalOrderItem } from "@/services/ProviderService";
+import { getProviderOrders, updateOrderStatus} from "@/services/ProviderService";
 
 const NEXT_STATUS: Record<string, string> = {
   PLACED: "CONFIRMED",
