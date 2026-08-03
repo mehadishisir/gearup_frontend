@@ -42,6 +42,7 @@ export default function RentalDetailsPage() {
   }
 
   const rental = data?.data;
+  console.log("Rental Status:", rental?.status);
 
   if (!rental) {
     return (
