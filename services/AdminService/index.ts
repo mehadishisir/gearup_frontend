@@ -1,46 +1,31 @@
-"use server";
+import { apiFetch } from "@/lib/api-client";
 
-import { cookies } from "next/headers";
-
-export async function getAllUsers() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("accessToken")?.value;
-
-  if (!token) throw new Error("Unauthorized");
-
-  const res = await fetch(
-    "https://gear-up-backend-one.vercel.app/api/admin/users",
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
-
-  const result = await res.json();
-  if (!res.ok) throw new Error(result?.message || "Failed to fetch users");
-  return result;
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  status: string;
+  createdAt: string;
 }
 
-export async function updateUserStatus(userId: string, status: string) {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("accessToken")?.value;
+export const getAllUsers = async () => {
+  return apiFetch<{
+    success: boolean;
+    message: string;
+    data: User[];
+  }>("/admin/users", {
+    method: "GET",
+  });
+};
 
-  if (!token) throw new Error("Unauthorized");
-
-  const res = await fetch(
-    `https://gear-up-backend-one.vercel.app/api/admin/users/${userId}`,
-    {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ status }),
-    }
-  );
-
-  const result = await res.json();
-  if (!res.ok) throw new Error(result?.message || "Failed to update user");
-  return result;
-}
+export const updateUserStatus = async (userId: string, status: string) => {
+  return apiFetch<{
+    success: boolean;
+    message: string;
+    data: User;
+  }>(`/admin/users/${userId}`, {
+    method: "PATCH",
+    body: JSON.stringify({ status }),
+  });
+};

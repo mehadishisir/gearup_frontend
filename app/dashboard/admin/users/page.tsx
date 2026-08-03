@@ -1,9 +1,5 @@
-"use client";
-
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -13,34 +9,41 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { getAllUsers, updateUserStatus } from "@/services/AdminService";
+import type { User } from "@/services/AdminService"; // ← এই type import যোগ করো
 
 export default function AdminUsersPage() {
   const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin-users"],
-    queryFn: () => getAllUsers().then((r) => r.data),
+    queryFn: getAllUsers,
   });
 
-  const statusMutation = useMutation({
-    mutationFn: ({ id, status }: { id: string; status: "ACTIVE" | "SUSPENDED" }) =>
-      updateUserStatus(id, status),
+  const mutation = useMutation({
+    mutationFn: ({ userId, status }: { userId: string; status: string }) =>
+      updateUserStatus(userId, status),
     onSuccess: () => {
-      toast.success("User updated");
+      toast.success("User status updated");
       queryClient.invalidateQueries({ queryKey: ["admin-users"] });
     },
     onError: (err: Error) => toast.error(err.message),
   });
 
   if (isLoading) {
-    return <div className="p-6 text-slate-500">Loading users...</div>;
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <p className="text-slate-500">Loading users...</p>
+      </div>
+    );
   }
 
-  return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold text-slate-900 mb-6">Manage Users</h1>
+  const users = data?.data ?? [];
 
-      <div className="rounded-xl border bg-white overflow-hidden">
+  return (
+    <div className="min-h-screen bg-slate-50 p-8">
+      <h1 className="text-3xl font-bold text-slate-900">Manage Users</h1>
+
+      <div className="mt-8 rounded-2xl border border-slate-200 bg-white shadow-sm">
         <Table>
           <TableHeader>
             <TableRow>
@@ -48,40 +51,28 @@ export default function AdminUsersPage() {
               <TableHead>Email</TableHead>
               <TableHead>Role</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead className="text-right">Action</TableHead>
+              <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data?.map((user) => (
+            {users.map((user: User) => ( // ← : User type যোগ করো
               <TableRow key={user.id}>
                 <TableCell>{user.name}</TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.role}</TableCell>
+                <TableCell>{user.status}</TableCell>
                 <TableCell>
-                  <Badge
-                    className={
-                      user.status === "SUSPENDED"
-                        ? "bg-red-100 text-red-700"
-                        : "bg-emerald-100 text-emerald-700"
-                    }
-                  >
-                    {user.status}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-right">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    disabled={statusMutation.isPending}
+                  <button
                     onClick={() =>
-                      statusMutation.mutate({
-                        id: user.id,
-                        status: user.status === "SUSPENDED" ? "ACTIVE" : "SUSPENDED",
+                      mutation.mutate({
+                        userId: user.id,
+                        status: user.status === "ACTIVE" ? "BLOCKED" : "ACTIVE",
                       })
                     }
+                    className="rounded-lg bg-orange-500 px-3 py-1 text-sm text-white hover:bg-orange-600"
                   >
-                    {user.status === "SUSPENDED" ? "Activate" : "Suspend"}
-                  </Button>
+                    Toggle
+                  </button>
                 </TableCell>
               </TableRow>
             ))}
