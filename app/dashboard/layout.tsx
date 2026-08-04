@@ -9,7 +9,7 @@ export default function DashboardLayout({
   return (
     <div className="min-h-screen bg-[#F8FAFC]">
 
-      <div className="flex">
+      <div className="lg:flex">
 
         {/* Sidebar */}
         <Sidebar />
