@@ -24,22 +24,22 @@ export default function AddGearForm() {
   const [loading, setLoading] = useState(false);
 
   const {
-  register,
-  handleSubmit,
-  reset,
-  formState: { errors }
-} = useForm({
-  resolver: zodResolver(gearSchema),
-  defaultValues: {
-    name: "",
-    categoryId: "",
-    price: 0,
-    stock: 0,
-    description: "",
-    available: true,
-    brand: "",
-  },
-});
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors }
+  } = useForm({
+    resolver: zodResolver(gearSchema),
+    defaultValues: {
+      name: "",
+      categoryId: "",
+      price: 0,
+      stock: 0,
+      description: "",
+      available: true,
+      brand: "",
+    },
+  });
 
   const onSubmit = async (data: GearFormData) => {
     try {
@@ -85,6 +85,20 @@ export default function AddGearForm() {
 
         {errors.name && (
           <p className="text-sm text-red-500">{errors.name.message}</p>
+        )}
+      </div>
+
+      {/* Brand */}
+      <div className="space-y-2">
+        <Label>Brand</Label>
+
+        <Input
+          placeholder="Trek"
+          {...register("brand")}
+        />
+
+        {errors.brand && (
+          <p className="text-sm text-red-500">{errors.brand.message}</p>
         )}
       </div>
 
@@ -148,6 +162,7 @@ export default function AddGearForm() {
       </div>
 
       <Button
+      type="submit"
         disabled={loading}
         className="
           w-full
