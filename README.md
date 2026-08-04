@@ -1,36 +1,165 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🏋️ GearUp – Sports & Outdoor Gear Rental Platform
 
-## Getting Started
+GearUp is a modern sports and outdoor gear rental platform where users can browse, rent, and manage rental equipment through a clean and responsive interface.
 
-First, run the development server:
+Built with **Next.js App Router**, **TypeScript**, **Tailwind CSS**, and integrated with a RESTful backend API.
+
+---
+
+## 🚀 Live Demo
+
+🌐 **Live Site:**  
+https://gearup-frontend-ten.vercel.app/
+
+🔗 **Frontend Repository:**  
+https://github.com/mehadishisir/gearup_frontend
+
+🔗 **Backend API:**  
+https://gear-up-backend-one.vercel.app/api
+
+---
+
+## ✨ Features
+
+- 🔐 JWT Authentication
+- 🍪 HttpOnly Cookie-Based Authentication
+- 👤 User Registration & Login
+- 🏋️ Browse Sports & Outdoor Gear
+- 📄 View Gear Details
+- 📱 Fully Responsive Design
+- 🎨 Modern UI with Shadcn UI
+- ⚡ Next.js App Router
+- 🛡️ Protected Routes using Middleware
+- 📊 Role-Based Dashboard
+- ✅ Form Validation with React Hook Form & Zod
+- 🔥 REST API Integration
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+
+- Next.js 16 (App Router)
+- React
+- TypeScript
+- Tailwind CSS
+- Shadcn UI
+- React Hook Form
+- Zod
+- Framer Motion
+- Lucide React
+- Sonner
+
+### Backend
+
+- Node.js
+- Express.js
+- TypeScript
+- PostgreSQL
+- Prisma ORM
+- JWT Authentication
+
+---
+
+## 📂 Folder Structure
+
+```text
+app/
+│
+├── (public)
+│   ├── page.tsx
+│   └── gear/
+│       └── [id]/
+│
+├── auth/
+│   ├── login/
+│   └── register/
+│
+├── dashboard/
+│
+└── gear/
+
+components/
+providers/
+services/
+schemas/
+types/
+hooks/
+lib/
+middleware.ts
+```
+
+---
+
+## ⚙️ Installation
+
+### Clone Repository
+
+```bash
+git clone https://github.com/mehadishisir/gearup_frontend.git
+```
+
+### Navigate to Project
+
+```bash
+cd gearup_frontend
+```
+
+### Install Dependencies
+
+```bash
+npm install
+```
+
+### Create Environment File
+
+Create a `.env.local` file:
+
+```env
+NEXT_PUBLIC_API_URL=https://gear-up-backend-one.vercel.app/api
+```
+
+### Run Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🔑 Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```env
+NEXT_PUBLIC_API_URL=https://gear-up-backend-one.vercel.app/api
+```
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 📸 Project Pages
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- 🏠 Home Page
+- 🏋️ Gear Listing
+- 📄 Gear Details
+- 🔐 Login
+- 📝 Register
+- 📊 Dashboard
+- 🚫 Protected Routes
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 👨‍💻 Developer
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**Mehadi Hasan Shisir**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**GitHub**  
+https://github.com/mehadishisir
+
+**LinkedIn**  
+https://www.linkedin.com/in/mehadishisir/
+
+---
+
+## 📄 License
+
+This project was developed for educational purposes as part of the **Programming Hero Level-2 Assignment**.
