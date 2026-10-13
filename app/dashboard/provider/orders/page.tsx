@@ -5,25 +5,18 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
-import { getProviderOrders, updateOrderStatus} from "@/services/ProviderService";
+import { getProviderOrders, updateOrderStatus } from "@/services/ProviderService";
 
 const NEXT_STATUS: Record<string, string> = {
   PLACED: "CONFIRMED",
-  CONFIRMED: "PAID",
   PAID: "PICKED_UP",
   PICKED_UP: "RETURNED",
 };
 
 const ACTION_LABEL: Record<string, string> = {
   PLACED: "Confirm",
-  CONFIRMED: "Mark Paid",
   PAID: "Mark Picked Up",
   PICKED_UP: "Mark Returned",
 };
@@ -36,6 +29,15 @@ const STATUS_COLOR: Record<string, string> = {
   RETURNED: "bg-slate-100 text-slate-700",
   CANCELLED: "bg-red-100 text-red-700",
 };
+
+function formatDate(iso?: string) {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString("en-GB", {
+    day: "2-digit", month: "short", year: "numeric",
+  });
+}
 
 export default function ProviderOrdersPage() {
   const queryClient = useQueryClient();
@@ -52,12 +54,14 @@ export default function ProviderOrdersPage() {
       toast.success("Order updated");
       queryClient.invalidateQueries({ queryKey: ["provider-orders"] });
     },
-    onError: (err: Error) => toast.error(err.message),
+    onError: (err: Error) => toast.error(err.message || "Failed to update order"),
   });
 
   if (isLoading) {
     return <div className="p-6 text-slate-500">Loading orders...</div>;
   }
+
+  const orders = data ?? [];
 
   return (
     <div className="p-6">
@@ -76,21 +80,48 @@ export default function ProviderOrdersPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data?.map((order) => {
+            {orders.map((order) => {
               const nextStatus = NEXT_STATUS[order.status];
+
+              const anyOrder = order as unknown as {
+                gearItem?: { name?: string };
+                gear?: { name?: string };
+                gearName?: string;
+                items?: Array<{
+                  gear?: { name?: string };
+                  gearItem?: { name?: string };
+                }>;
+                customer?: { name?: string };
+                user?: { name?: string };
+                totalPrice?: number;
+              };
+
+              const gearName =
+                anyOrder.gearItem?.name ||
+                anyOrder.gear?.name ||
+                anyOrder.gearName ||
+                anyOrder.items?.[0]?.gear?.name ||
+                anyOrder.items?.[0]?.gearItem?.name ||
+                "—";
+
+              const customerName =
+                anyOrder.customer?.name || anyOrder.user?.name || "—";
+
+              const price = anyOrder.totalPrice ?? Number(order.totalAmount ?? 0);
+
               return (
                 <TableRow key={order.id}>
-                  <TableCell>{order.gearItem?.name}</TableCell>
-                  <TableCell>{order.customer?.name}</TableCell>
-                  <TableCell>
-                    {order.startDate} → {order.endDate}
+                  <TableCell className="font-medium">{gearName}</TableCell>
+                  <TableCell>{customerName}</TableCell>
+                  <TableCell className="text-sm text-slate-600">
+                    {formatDate(order.startDate)} → {formatDate(order.endDate)}
                   </TableCell>
-                  <TableCell>৳{order.totalAmount}</TableCell>
+                  <TableCell>৳{price}</TableCell>
                   <TableCell>
-                    <Badge className={STATUS_COLOR[order.status]}>{order.status}</Badge>
+                    <Badge className={STATUS_COLOR[order.status] || ""}>{order.status}</Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                    {nextStatus && (
+                    {nextStatus ? (
                       <Button
                         size="sm"
                         variant="outline"
@@ -101,6 +132,12 @@ export default function ProviderOrdersPage() {
                       >
                         {ACTION_LABEL[order.status]}
                       </Button>
+                    ) : (
+                      <span className="text-xs text-slate-400">
+                        {order.status === "CONFIRMED"
+                          ? "Awaiting customer payment"
+                          : "—"}
+                      </span>
                     )}
                   </TableCell>
                 </TableRow>
@@ -109,7 +146,7 @@ export default function ProviderOrdersPage() {
           </TableBody>
         </Table>
 
-        {data?.length === 0 && (
+        {orders.length === 0 && (
           <p className="p-6 text-center text-slate-500">No orders yet.</p>
         )}
       </div>
