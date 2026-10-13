@@ -10,10 +10,7 @@ import {
 import { useRouter } from "next/navigation";
 
 import { IUser } from "@/types/auth";
-import {
-  getCurrentUser,
-  logoutUser,
-} from "@/services/AuthService";
+import { getCurrentUser, logoutUser } from "@/services/AuthService";
 
 interface AuthContextType {
   user: IUser | null;
@@ -25,11 +22,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export function AuthProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   const [user, setUser] = useState<IUser | null>(null);
@@ -39,7 +32,6 @@ export function AuthProvider({
     const loadCurrentUser = async () => {
       try {
         const currentUser = await getCurrentUser();
-        // console.log("CURRENT USER:", currentUser);
         setUser(currentUser);
       } catch (error) {
         console.error("Failed to load current user:", error);

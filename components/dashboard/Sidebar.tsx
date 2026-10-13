@@ -41,23 +41,54 @@ const adminMenu = [
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const { user } = useAuth();
-
-  const menuItems =
-    user?.role === "ADMIN"
-      ? adminMenu
-      : user?.role === "PROVIDER"
-      ? providerMenu
-      : customerMenu;
+  const { user, isLoading } = useAuth();
 
   const activeClass = "bg-orange-50 text-orange-600";
   const inactiveClass = "text-slate-600 hover:bg-slate-50 hover:text-slate-900";
   const activeIconClass = "text-orange-500";
   const inactiveIconClass = "text-slate-400";
 
+  if (isLoading) {
+    return (
+      <>
+        <div className="sticky top-16 z-40 flex gap-1 overflow-x-auto border-b border-slate-100 bg-white px-3 py-2 lg:hidden">
+          {[1, 2, 3, 4].map((i) => (
+            <div
+              key={i}
+              className="h-12 w-20 shrink-0 animate-pulse rounded-lg bg-slate-100"
+            />
+          ))}
+        </div>
+
+        <aside className="sticky top-0 hidden h-screen w-72 shrink-0 border-r border-slate-100 bg-white px-6 py-8 lg:block">
+          <div className="h-10 w-32 animate-pulse rounded bg-slate-100" />
+          <div className="mt-8 h-16 animate-pulse rounded-2xl bg-slate-100" />
+          <div className="mt-8 space-y-2">
+            {[1, 2, 3, 4].map((i) => (
+              <div
+                key={i}
+                className="h-12 animate-pulse rounded-xl bg-slate-100"
+              />
+            ))}
+          </div>
+        </aside>
+      </>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
+
+  const menuItems =
+    user.role === "ADMIN"
+      ? adminMenu
+      : user.role === "PROVIDER"
+      ? providerMenu
+      : customerMenu;
+
   return (
     <>
-      {/* Mobile Tab Bar — sits directly below the navbar */}
       <div className="sticky top-16 z-40 flex gap-1 overflow-x-auto border-b border-slate-100 bg-white px-3 py-2 lg:hidden">
         {menuItems.map((item) => {
           const Icon = item.icon;
@@ -71,15 +102,16 @@ export default function Sidebar() {
                 active ? activeClass : inactiveClass
               }`}
             >
-              <Icon className={`h-5 w-5 ${active ? activeIconClass : inactiveIconClass}`} />
+              <Icon
+                className={`h-5 w-5 ${active ? activeIconClass : inactiveIconClass}`}
+              />
               {item.title}
             </Link>
           );
         })}
       </div>
 
-      {/* Desktop Sidebar */}
-      <aside className="hidden h-screen w-72 shrink-0 border-r border-slate-100 bg-white px-6 py-8 lg:block sticky top-0">
+      <aside className="sticky top-0 hidden h-screen w-72 shrink-0 border-r border-slate-100 bg-white px-6 py-8 lg:block">
         <Link href="/" className="flex items-center gap-2">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-500 text-lg font-bold text-white">
             G
@@ -89,7 +121,7 @@ export default function Sidebar() {
 
         <div className="mt-8 rounded-2xl bg-slate-50 p-4">
           <p className="text-xs text-slate-500">Logged in as</p>
-          <p className="mt-1 font-semibold text-slate-900">{user?.role || "USER"}</p>
+          <p className="mt-1 font-semibold text-slate-900">{user.role}</p>
         </div>
 
         <nav className="mt-8 space-y-2">
