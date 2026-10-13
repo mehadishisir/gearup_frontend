@@ -33,6 +33,7 @@ import {
 
 import { loginSchema, LoginFormData } from "@/schemas/login.schema";
 import { getCurrentUser } from "@/services/AuthService";
+import { useAuth } from "@/providers/AuthProvider";   // ⬅ নতুন import
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -79,6 +80,7 @@ function FeatureItem({
 
 export default function LoginPage() {
   const router = useRouter();
+  const { setUser } = useAuth();  
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -91,97 +93,54 @@ export default function LoginPage() {
     defaultValues: { email: "", password: "" },
   });
 
- async function onSubmit(data: LoginFormData) {
-  setIsLoading(true);
+  async function onSubmit(data: LoginFormData) {
+    setIsLoading(true);
 
-  try {
-
-    const res = await fetch(
-      "/api/auth/login",
-      {
+    try {
+      const res = await fetch("/api/auth/login", {
         method: "POST",
-
-        headers: {
-          "Content-Type": "application/json",
-        },
-
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
+      });
+
+      const result = await res.json();
+
+      if (result.success) {
+        toast.success(result.message || "Welcome back!");
+
+       
+        if (result.data?.user) {
+          setUser(result.data.user);
+        }
+
+        const currentUser = await getCurrentUser();
+
+        const user = currentUser ?? result.data?.user;
+
+        if (!user) {
+          toast.error("Failed to load user information.");
+          return;
+        }
+
+        const roleRoutes: Record<string, string> = {
+          CUSTOMER: "/dashboard/customer",
+          PROVIDER: "/dashboard/provider",
+          ADMIN: "/dashboard/admin",
+        };
+
+        router.push(roleRoutes[user.role] || "/");
+        router.refresh();
+      } else {
+        toast.error(result.message || "Invalid credentials");
       }
-    );
-
-
-    const result = await res.json();
-
-
-
-    if (result.success) {
-
-      toast.success(
-        result.message || "Welcome back!"
-      );
-
-
-      const currentUser =
-        await getCurrentUser();
-
-
-
-      if (!currentUser) {
-
-        toast.error(
-          "Failed to load user information."
-        );
-
-        return;
-      }
-
-
-
-      const roleRoutes: Record<string, string> = {
-
-        CUSTOMER:
-          "/dashboard/customer",
-
-        PROVIDER:
-          "/dashboard/provider",
-
-        ADMIN:
-          "/dashboard/admin",
-
-      };
-
-
-
-      router.push(
-        roleRoutes[currentUser.role] || "/"
-      );
-
-
-    } else {
-
+    } catch (error) {
       toast.error(
-        result.message ||
-        "Invalid credentials"
+        error instanceof Error ? error.message : "Something went wrong"
       );
-
+    } finally {
+      setIsLoading(false);
     }
-
-
-  } catch (error) {
-
-    toast.error(
-      error instanceof Error
-        ? error.message
-        : "Something went wrong"
-    );
-
-
-  } finally {
-
-    setIsLoading(false);
-
   }
-}
 
   return (
     <div className="flex min-h-screen w-full bg-white">
