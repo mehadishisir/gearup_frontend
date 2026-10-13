@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image"; // ← ADD THIS
+import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
@@ -36,7 +36,7 @@ import {
 
 import { registerSchema, RegisterFormData } from "@/schemas/register.schema";
 // import { registerUserAction } from "@/actions/auth/register";
-import { watch } from "fs/promises";
+
 
 import { registerUser } from "@/services/AuthService";
 

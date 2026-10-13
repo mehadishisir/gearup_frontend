@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useQuery } from "@tanstack/react-query";
 
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -41,6 +42,12 @@ export default function AddGearForm() {
     },
   });
 
+  const { data: categories } = useQuery({
+    queryKey: ["categories"],
+    queryFn: () =>
+      apiFetch<{ data: { id: string; name: string }[] }>("/categories"),
+  });
+
   const onSubmit = async (data: GearFormData) => {
     try {
       setLoading(true);
@@ -66,15 +73,8 @@ export default function AddGearForm() {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="
-        space-y-6
-        rounded-2xl
-        bg-white
-        p-6
-        shadow-sm
-      "
+      className="space-y-6 rounded-2xl bg-white p-6 shadow-sm"
     >
-      {/* Name */}
       <div className="space-y-2">
         <Label>Gear Name</Label>
 
@@ -88,7 +88,6 @@ export default function AddGearForm() {
         )}
       </div>
 
-      {/* Brand */}
       <div className="space-y-2">
         <Label>Brand</Label>
 
@@ -102,21 +101,26 @@ export default function AddGearForm() {
         )}
       </div>
 
-      {/* Category */}
       <div className="space-y-2">
         <Label>Category</Label>
 
-        <Input
-          placeholder="Cycling"
+        <select
+          className="h-10 w-full rounded-md border border-input bg-transparent px-3 text-sm"
           {...register("categoryId")}
-        />
+        >
+          <option value="">Select a category</option>
+          {categories?.data.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name}
+            </option>
+          ))}
+        </select>
 
         {errors.categoryId && (
           <p className="text-sm text-red-500">{errors.categoryId.message}</p>
         )}
       </div>
 
-      {/* Price */}
       <div className="space-y-2">
         <Label>Rental Price</Label>
 
@@ -131,7 +135,6 @@ export default function AddGearForm() {
         )}
       </div>
 
-      {/* Stock */}
       <div className="space-y-2">
         <Label>Stock</Label>
 
@@ -146,7 +149,6 @@ export default function AddGearForm() {
         )}
       </div>
 
-      {/* Description */}
       <div className="space-y-2">
         <Label>Description</Label>
 
@@ -162,14 +164,9 @@ export default function AddGearForm() {
       </div>
 
       <Button
-      type="submit"
+        type="submit"
         disabled={loading}
-        className="
-          w-full
-          rounded-xl
-          bg-orange-500
-          hover:bg-orange-600
-        "
+        className="w-full rounded-xl bg-orange-500 hover:bg-orange-600"
       >
         {loading ? (
           <>
