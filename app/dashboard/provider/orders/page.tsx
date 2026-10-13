@@ -85,7 +85,7 @@ export default function ProviderOrdersPage() {
                   <TableCell>
                     {order.startDate} → {order.endDate}
                   </TableCell>
-                  <TableCell>৳{order.totalPrice}</TableCell>
+                  <TableCell>৳{order.totalAmount}</TableCell>
                   <TableCell>
                     <Badge className={STATUS_COLOR[order.status]}>{order.status}</Badge>
                   </TableCell>
