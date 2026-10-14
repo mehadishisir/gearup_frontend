@@ -68,7 +68,7 @@ export default function AdminUsersPage() {
                     onClick={() =>
                       mutation.mutate({
                         userId: user.id,
-                        status: user.status === "ACTIVE" ? "BLOCKED" : "ACTIVE",
+                        status: user.status === "ACTIVE" ? "SUSPENDED" : "ACTIVE",
                       })
                     }
                     className="rounded-lg bg-orange-500 px-3 py-1 text-sm text-white hover:bg-orange-600"
